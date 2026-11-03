@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DestrinchaTech — Aprenda e explique tecnologia</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Ambient Background Glow -->
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <!-- Top Header -->
+  <header class="app-header">
+    <div class="container header-inner">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true" title="DestrinchaTech — Cubo destrinchado">
+          <svg class="brand-logo-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logoTopGrad" x1="12" y1="6" x2="52" y2="28" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#38bdf8" />
+                <stop offset="100%" stop-color="#93c5fd" />
+              </linearGradient>
+              <linearGradient id="logoLeftGrad" x1="8" y1="22" x2="30" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#2563eb" />
+                <stop offset="100%" stop-color="#1d4ed8" />
+              </linearGradient>
+              <linearGradient id="logoRightGrad" x1="34" y1="22" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#0ea5e9" />
+                <stop offset="100%" stop-color="#2563eb" />
+              </linearGradient>
+            </defs>
+            <!-- Face Superior (flutuando para cima) -->
+            <polygon class="cube-piece piece-top" points="32,7 52,18.5 32,30 12,18.5" fill="url(#logoTopGrad)" stroke="#e0f2fe" stroke-width="1.4" stroke-linejoin="round" />
+            <!-- Face Esquerda (deslocada para a esquerda) -->
+            <polygon class="cube-piece piece-left" points="10,23 30,34.5 30,56 10,44.5" fill="url(#logoLeftGrad)" stroke="#60a5fa" stroke-width="1.4" stroke-linejoin="round" />
+            <!-- Face Direita (deslocada para a direita) -->
+            <polygon class="cube-piece piece-right" points="34,34.5 54,23 54,44.5 34,56" fill="url(#logoRightGrad)" stroke="#38bdf8" stroke-width="1.4" stroke-linejoin="round" />
+            <!-- Núcleo brilhante no centro do cubo destrinchado -->
+            <circle cx="32" cy="32.2" r="2.4" fill="#ffffff" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Destrincha<span class="gradient-text">Tech</span></h1>
+          <p class="brand-subtitle">Estude com foco e consolide explicando em voz alta</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="soundToggleBtn" class="icon-btn" title="Som de alerta ativado" aria-label="Alternar som de alerta">
+          <span id="soundIcon">🔔</span>
+          <span class="icon-btn-label" id="soundLabel">Som ativo</span>
+        </button>
+        <button id="historyScrollBtn" class="icon-btn" title="Ver histórico de estudos">
+          <span>📚</span>
+          <span class="icon-btn-label">Histórico (<span id="historyCountBadge">0</span>)</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <!-- Step 1: Select Area & Generate Topic -->
+    <section class="card generator-section" aria-labelledby="area-heading">
+      <div class="section-header">
+        <div>
+          <span class="step-badge">Passo 1</span>
+          <h2 id="area-heading" class="section-title">Escolha a área de tecnologia</h2>
+        </div>
+        <p class="section-desc">Selecione uma trilha específica ou deixe em "Todas as áreas" para um desafio surpresa.</p>
+      </div>
+
+      <div id="categoryPills" class="category-pills" role="radiogroup" aria-label="Áreas de tecnologia">
+        <!-- Populated dynamically via app.js -->
+      </div>
+
+      <div class="generator-cta">
+        <button id="generateTopicBtn" class="btn btn-primary btn-lg">
+          <span id="generateBtnText">Gerar assunto</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Generated Topic + Time Selector + Dual Timers (Revealed after clicking Generate) -->
+    <div id="studyWorkspace" class="study-workspace hidden">
+      <!-- Generated Topic Card -->
+      <section class="card topic-card" aria-live="polite">
+        <div class="topic-card-top">
+          <div class="topic-badges">
+            <span id="topicCategoryBadge" class="badge badge-category">💻 Desenvolvimento</span>
+            <span id="topicLevelBadge" class="badge badge-level">Intermediário</span>
+          </div>
+          <button id="regenerateBtn" class="btn btn-ghost btn-sm" title="Sortear outro assunto desta área">
+            🔄 Outro assunto
+          </button>
+        </div>
+
+        <h2 id="topicTitle" class="topic-title">Carregando assunto...</h2>
+        <p id="topicDescription" class="topic-description"></p>
+
+        <div class="topic-keypoints-box">
+          <h3 class="keypoints-heading">🎯 Pontos-chave sugeridos para guiar seu estudo e sua fala:</h3>
+          <ul id="topicKeyPoints" class="keypoints-list"></ul>
+        </div>
+      </section>
+
+      <!-- Step 2: Select Time & Automatic Speaking Calculation -->
+      <section class="card time-selector-card" aria-labelledby="time-heading">
+        <div class="section-header">
+          <div>
+            <span class="step-badge">Passo 2</span>
+            <h2 id="time-heading" class="section-title">Em quanto tempo você quer aprender?</h2>
+          </div>
+          <p class="section-desc">Selecione o tempo de estudo (máximo 5h). O tempo para falar sobre o assunto é calculado automaticamente.</p>
+        </div>
+
+        <div id="durationGrid" class="duration-grid" role="radiogroup" aria-label="Tempo de aprendizado">
+          <!-- Populated by app.js: 10min, 15min, 30min, 1h, 2h, 3h, 4h, 5h -->
+        </div>
+
+        <!-- Auto-calculated summary banner -->
+        <div class="time-calculation-banner">
+          <div class="calc-item">
+            <span class="calc-icon">📖</span>
+            <div>
+              <span class="calc-label">Tempo para aprender</span>
+              <strong id="summaryLearnTime" class="calc-value">30 min</strong>
+            </div>
+          </div>
+          <div class="calc-arrow" aria-hidden="true">➔</div>
+          <div class="calc-item highlight-speak">
+            <span class="calc-icon">🗣️</span>
+            <div>
+              <span class="calc-label">Tempo sugerido para falar</span>
+              <strong id="summarySpeakTime" class="calc-value">15 min</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="speak-disclaimer" role="note">
+          <span class="disclaimer-icon">💡</span>
+          <p>
+            <strong>Importante:</strong> O timer de fala é apenas um cronômetro visual (sem gravação de áudio ou vídeo). Além disso, <strong>você não precisa utilizar o tempo inteiro de falar</strong> — ele funciona apenas como uma sugestão de teto para você explicar o que aprendeu no seu próprio ritmo!
+          </p>
+        </div>
+      </section>
+
+      <!-- Step 3: Active Timers (Learn Timer & Speak Timer) -->
+      <section class="timers-grid" aria-label="Cronômetros de estudo e fala">
+        <!-- Timer 1: Learn -->
+        <div id="learnTimerCard" class="card timer-card timer-learn active-focus">
+          <div class="timer-header">
+            <span class="timer-phase-badge">Fase 1 • Estudo</span>
+            <span id="learnStatusTag" class="timer-status-tag">Pronto</span>
+          </div>
+          <h3 class="timer-title">📖 Timer de aprendizado</h3>
+          <p class="timer-subtitle">Pesquise, leia documentações e estruture seu entendimento sobre o tópico.</p>
+
+          <div class="timer-display-wrapper">
+            <svg class="timer-ring" viewBox="0 0 120 120">
+              <circle class="timer-ring-bg" cx="60" cy="60" r="54" />
+              <circle id="learnRingProgress" class="timer-ring-progress learn-stroke" cx="60" cy="60" r="54" />
+            </svg>
+            <div class="timer-readout">
+              <span id="learnTimerDisplay" class="mono-time">00:30:00</span>
+              <span id="learnTotalLabel" class="timer-total-label">Meta: 30 minutos</span>
+            </div>
+          </div>
+
+          <div class="timer-controls">
+            <button id="learnStartPauseBtn" class="btn btn-learn btn-control">
+              <span>▶</span> Iniciar estudo
+            </button>
+            <button id="learnResetBtn" class="btn btn-secondary btn-icon-only" title="Reiniciar timer de aprendizado" aria-label="Reiniciar timer de aprendizado">
+              ↺
+            </button>
+          </div>
+          <button id="skipToSpeakBtn" class="btn btn-link">
+            Já terminei de estudar ➔ Ir para o timer de fala
+          </button>
+        </div>
+
+        <!-- Timer 2: Speak -->
+        <div id="speakTimerCard" class="card timer-card timer-speak">
+          <div class="timer-header">
+            <span class="timer-phase-badge speak-badge">Fase 2 • Explicação</span>
+            <span id="speakStatusTag" class="timer-status-tag">Aguardando</span>
+          </div>
+          <h3 class="timer-title">🗣️ Timer para falar</h3>
+          <p class="timer-subtitle">Explique o assunto com suas próprias palavras (técnica Feynman). Sem gravação!</p>
+
+          <div class="timer-display-wrapper">
+            <svg class="timer-ring" viewBox="0 0 120 120">
+              <circle class="timer-ring-bg" cx="60" cy="60" r="54" />
+              <circle id="speakRingProgress" class="timer-ring-progress speak-stroke" cx="60" cy="60" r="54" />
+            </svg>
+            <div class="timer-readout">
+              <span id="speakTimerDisplay" class="mono-time">00:15:00</span>
+              <span id="speakTotalLabel" class="timer-total-label">Sugestão: até 15 minutos</span>
+            </div>
+          </div>
+
+          <div class="speak-friendly-reminder">
+            ✨ Lembrete: Este tempo é só uma sugestão! Se você explicar tudo antes do tempo acabar, pode concluir sua sessão a qualquer momento.
+          </div>
+
+          <div class="timer-controls">
+            <button id="speakStartPauseBtn" class="btn btn-speak btn-control">
+              <span>▶</span> Iniciar fala
+            </button>
+            <button id="speakResetBtn" class="btn btn-secondary btn-icon-only" title="Reiniciar timer de fala" aria-label="Reiniciar timer de fala">
+              ↺
+            </button>
+          </div>
+          <button id="finishSessionBtn" class="btn btn-complete-session">
+            ✅ Concluir explicação e salvar no histórico
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <!-- Study History Section -->
+    <section id="historySection" class="card history-section" aria-labelledby="history-heading">
+      <div class="history-header">
+        <div>
+          <h2 id="history-heading" class="section-title">📚 Histórico de assuntos estudados</h2>
+          <p class="section-desc">Seus estudos concluídos ficam salvos automaticamente no seu navegador.</p>
+        </div>
+        <button id="clearHistoryBtn" class="btn btn-ghost btn-sm hidden">
+          🗑️ Limpar histórico
+        </button>
+      </div>
+
+      <div id="historyEmptyState" class="history-empty">
+        <div class="empty-icon">🌱</div>
+        <p>Você ainda não concluiu nenhuma sessão de estudo.</p>
+        <span>Gere um assunto acima, escolha seu tempo e clique em concluir quando terminar!</span>
+      </div>
+
+      <div id="historyList" class="history-list hidden"></div>
+    </section>
+  </main>
+
+  <!-- Completion / Alert Modal -->
+  <div id="alertModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div id="modalIcon" class="modal-icon">🎉</div>
+      <h3 id="modalTitle" class="modal-title">Tempo de aprendizado concluído!</h3>
+      <p id="modalMessage" class="modal-message"></p>
+      <div class="modal-actions">
+        <button id="modalPrimaryBtn" class="btn btn-primary">Começar timer de fala</button>
+        <button id="modalCloseBtn" class="btn btn-ghost">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="topics.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
